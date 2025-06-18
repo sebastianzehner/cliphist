@@ -28,6 +28,12 @@ Install on Alpine Linux
 doas apk add xsel xdotool libnotify dunst
 ```
 
+Install on Arch Linux
+
+```bash
+sudo pacman -Syu xsel xdotool libnotify dunst
+```
+
 ## Installation
 
 Clone the repo and make the script executable:
@@ -41,7 +47,7 @@ chmod +x dmenu_cliphist.sh
 You may want to move it to a directory in your `$PATH`, e.g.:
 
 ```bash
-cp dmenu_cliphist.sh ~/.local/bin/cliphist
+cp dmenu_cliphist.sh /usr/local/bin/cliphist
 ```
 
 ## Usage

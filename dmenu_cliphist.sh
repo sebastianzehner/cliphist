@@ -87,7 +87,7 @@ sel() {
   fi
 
   # Restore selected entry (convert placeholder back to newlines) and paste
-  echo "$selection" | sed "s/$placeholder/\n/g" | xsel -i -b
+  printf "$selection" | sed "s/$placeholder/\n/g" | xsel -i -b
   xdotool key --clearmodifiers ctrl+shift+v
   notification="Inserted from clipboard!"
 }

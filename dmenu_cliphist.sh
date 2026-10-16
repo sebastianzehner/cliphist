@@ -47,14 +47,14 @@ write() {
 
   # Only add to history if not already present
   if ! grep -Fxq "$multiline" "$histfile"; then
-    echo "$multiline" >> "$histfile"
+    echo "$multiline" >>"$histfile"
   fi
 
   # Limit history to the last 500 entries
-  tail -n 500 "$histfile" > "$histfile.tmp" && mv "$histfile.tmp" "$histfile"
+  tail -n 500 "$histfile" >"$histfile.tmp" && mv "$histfile.tmp" "$histfile"
 
   # Prepare a notification based on clip length
-  if (( ${#clip} > 100 )); then
+  if ((${#clip} > 100)); then
     notification=("󰢨 Saved to clipboard history" "${clip:0:100}...")
   else
     notification=("󰢨 Saved to clipboard history" "$clip")
@@ -67,7 +67,11 @@ sel() {
   delete_entry="󰆴 delete entry"
 
   # Combine history with menu options and present via dmenu
-  selection=$( (tac "$histfile"; echo "$menu_header"; echo "$delete_entry") | dmenu -b -l 10 -i -p "Clipboard history:" -nb "#11111b" -nf "#b4befe" -sb "#89b4fa" -sf "#11111b")
+  selection=$( (
+    tac "$histfile"
+    echo "$menu_header"
+    echo "$delete_entry"
+  ) | dmenu -b -l 10 -i -p "Clipboard history:" -nb "#11111b" -nf "#b4befe" -sb "#89b4fa" -sf "#11111b")
 
   # Exit if user presses ESC or selects menu header
   if [[ -z "$selection" || "$selection" == "$menu_header" ]]; then
@@ -81,7 +85,7 @@ sel() {
       return # Exit if ESC is pressed in delete menu
     fi
     # Remove selected entry safely
-    awk -v target="$to_delete" '$0 != target' "$histfile" > "$histfile.tmp" && mv "$histfile.tmp" "$histfile"
+    awk -v target="$to_delete" '$0 != target' "$histfile" >"$histfile.tmp" && mv "$histfile.tmp" "$histfile"
     notification="Deleted from clipboard history!"
     return
   fi
@@ -94,10 +98,10 @@ sel() {
 
 # Entry point: handle subcommands
 case "$1" in
-  add) highlight && write ;;  # Copy primary selection and save to history
-  out) output && write ;;     # Read from stdin and save to history
-  sel) sel ;;                 # Show clipboard history menu
-  *) # Show help message
+  add) highlight && write ;; # Copy primary selection and save to history
+  out) output && write ;;    # Read from stdin and save to history
+  sel) sel ;;                # Show clipboard history menu
+  *)                         # Show help message
     printf "$0 | History file: $histfile\n\n"
     printf "add - copies primary selection to clipboard, and adds to history file\n"
     printf "out - pipe commands to copy output to clipboard, and add to history file\n"
